@@ -1,0 +1,24 @@
+{
+  "devDependencies": {
+    "@symfony/stimulus-bridge": "^1.1.0",
+    "@symfony/webpack-encore": "^0.33.0",
+    "core-js": "^3.0.0",
+    "regenerator-runtime": "^0.13.2",
+    "sass": "^1.30.0",
+    "sass-loader": "^10.0.0",
+    "stimulus": "^2.0.0",
+    "webpack-notifier": "^1.6.0"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev-server": "encore dev-server --watch-content-base --content-base templates/ --content-base src/ --content-base vendor/ --content-base domain/ --content-base assets/ --disable-host-check --watch --hot --host=0.0.0.0",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production --progress"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.6.0",
+    "bootstrap": "^5.0.0-beta1"
+  }
+}
