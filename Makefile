@@ -1,4 +1,4 @@
-.PHONY: dev clean init-db watch
+.PHONY: dev clean init-db watch php node unit-test
 user := $(shell id -u)
 group := $(shell id -g)
 docker_compose_dev := USER_ID=$(user) GROUP_ID=$(group) docker-compose -f docker/docker-compose.dev.yaml --env-file ".env.local"
@@ -23,6 +23,10 @@ php: ## Get php bash
 
 node: ## Get node bash
 	$(docker_compose_dev) exec node bash
+
+## Tests
+unit-test: .env.local vendor public/build ## Domain unit test
+	$(docker_compose_dev) exec php vendor/bin/phpunit-watcher watch
 
 # Dependencies
 public/build: node_modules
