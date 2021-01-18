@@ -1,0 +1,8 @@
+parameters:
+	level: 6
+	paths:
+		- src
+		- tests
+		- domain
+	excludePaths:
+	    - src/Infrastructure/Resources/skeleton
