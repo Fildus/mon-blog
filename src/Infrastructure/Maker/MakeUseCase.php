@@ -22,7 +22,7 @@ class MakeUseCase extends AbstractMaker
         return 'maker:use-case';
     }
 
-    public function configureCommand(Command $command, InputConfiguration $inputConfig)
+    public function configureCommand(Command $command, InputConfiguration $inputConfig): void
     {
         $command
             ->setDescription("Create a new use case.")
@@ -30,7 +30,7 @@ class MakeUseCase extends AbstractMaker
             ->addArgument('name', InputArgument::OPTIONAL, 'Choose a name for your new use case.');
     }
 
-    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator)
+    public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
         $this->useCaseDomain = Str::asCamelCase($input->getArgument("domain"));
         $this->useCaseName = Str::asCamelCase($input->getArgument("name"));
@@ -111,10 +111,13 @@ class MakeUseCase extends AbstractMaker
         $this->writeSuccessMessage($io);
     }
 
-    public function configureDependencies(DependencyBuilder $dependencies)
+    public function configureDependencies(DependencyBuilder $dependencies): void
     {
     }
 
+    /**
+     * @return string[]
+     */
     private function getClassDetails(string $namespacePrefix, string $suffix = ''): array
     {
         return [
