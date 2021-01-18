@@ -1,4 +1,4 @@
-.PHONY: dev clean init-db watch php node unit-test
+.PHONY: dev clean init-db watch php node unit-test use-case
 user := $(shell id -u)
 group := $(shell id -g)
 docker_compose_dev := USER_ID=$(user) GROUP_ID=$(group) docker-compose -f docker/docker-compose.dev.yaml --env-file ".env.local"
@@ -23,6 +23,10 @@ php: ## Get php bash
 
 node: ## Get node bash
 	$(docker_compose_dev) exec node bash
+
+## Make
+use-case: ## New use case
+	$(docker_compose_dev) exec php bin/console make:use-case
 
 ## Tests
 unit-test: .env.local vendor public/build ## Domain unit test
