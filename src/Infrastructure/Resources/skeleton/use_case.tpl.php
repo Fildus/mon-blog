@@ -8,7 +8,7 @@ class <?php echo $className; ?><?php echo "\n" ?>
         //private EntityRepository $repository
     ) { }
 
-    public function execute(<?php echo $requestClassName ?> $request, <?php echo $presenterInterfaceName ?> $presenter)
+    public function execute(<?php echo $requestClassName ?> $request, <?php echo $presenterInterfaceName ?> $presenter): void
     {
         /*
         $domainEntity = new DomainEntity(
