@@ -1,4 +1,4 @@
-.PHONY: dev clean init-db watch php node unit-test use-case phpstan rebuild extraInfos
+.PHONY: dev dev-withlogs rebuild clean php node unit-test use-case phpstan extraInfos
 user := $(shell id -u)
 group := $(shell id -g)
 docker_compose_dev := USER_ID=$(user) GROUP_ID=$(group) docker-compose -f docker/docker-compose.dev.yaml --env-file ".env.local"
@@ -7,6 +7,11 @@ docker_compose_dev := USER_ID=$(user) GROUP_ID=$(group) docker-compose -f docker
 dev: .env.local vendor public/build ## run development server
 	$(docker_compose_dev) up --build -d
 	make extraInfos
+
+dev-withlogs: .env.local vendor public/build ## run development server
+	make extraInfos
+	sleep 3
+	$(docker_compose_dev) up --build
 
 rebuild: ## rebuild all
 	make -B vendor public/build
@@ -31,7 +36,7 @@ use-case: ## New use case
 
 ## INSPECTION
 .PHONY: phpstan
-phpstan: vendor ## run phpstan inspection
+phpstan: ## run phpstan inspection
 	$(docker_compose_dev) exec php vendor/bin/phpstan analyse -c phpstan.neon
 
 ## Tests
