@@ -2,7 +2,7 @@ hideManual: true
 watch:
   directories:
     - src
-    - domain/tests
+    - domain
     - tests
   fileMask: '*.php'
 notifications:

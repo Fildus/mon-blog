@@ -6,3 +6,5 @@ parameters:
 		- domain
 	excludePaths:
 	    - src/Infrastructure/Resources/skeleton
+	bootstrapFiles:
+	    - 'bin/.phpunit/phpunit-7.5-0/vendor/autoload.php'
