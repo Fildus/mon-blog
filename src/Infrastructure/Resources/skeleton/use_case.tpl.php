@@ -1,14 +1,16 @@
-<?php echo "<?php\n" ?>
+<?= "<?php\n" ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $useCase_nameSpace; ?>;
 
-class <?php echo $className; ?><?php echo "\n" ?>
+use <?= $useCaseInterface_className; ?>;
+
+class <?= $useCase_shortName; ?> implements <?= $useCaseInterface_shortName; ?><?= "\n" ?>
 {
     public function __construct(
         //private EntityRepository $repository
     ) { }
 
-    public function execute(<?php echo $requestClassName ?> $request, <?php echo $presenterInterfaceName ?> $presenter): void
+    public function execute(<?= $request_shortName ?> $request, <?= $presenter_shortName ?> $presenter): void
     {
         /*
         $domainEntity = new DomainEntity(
@@ -18,7 +20,7 @@ class <?php echo $className; ?><?php echo "\n" ?>
 
         $this->repository->doSomething($domainEntity);
 
-        $presenter->present(new <?php echo $responseClassName ?>(
+        $presenter->present(new <?= $response_shortName ?>(
             domainEntity: $domainEntity ?? null
         ));
         */

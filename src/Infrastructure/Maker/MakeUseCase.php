@@ -14,9 +14,6 @@ use Symfony\Component\Console\Input\InputInterface;
 
 class MakeUseCase extends AbstractMaker
 {
-    private string $useCaseDomain;
-    private string $useCaseName;
-
     public static function getCommandName(): string
     {
         return 'maker:use-case';
@@ -32,103 +29,68 @@ class MakeUseCase extends AbstractMaker
 
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
-        $this->useCaseDomain = Str::asCamelCase($input->getArgument("domain"));
-        $this->useCaseName = Str::asCamelCase($input->getArgument("name"));
+        $useCaseDomain = Str::asCamelCase($input->getArgument("domain"));
+        $useCaseName = Str::asCamelCase($input->getArgument("name"));
 
-        $domainDir = __DIR__ . "/../../../domain/src/" . $this->useCaseDomain;
-        $domainTestDir = __DIR__ . "/../../../domain/tests/" . $this->useCaseDomain;
+        $domainDir = __DIR__ . "/../../../domain/src/" . $useCaseDomain;
+        $useCaseDir = __DIR__ . "/../../../domain/useCase/";
+        $domainTestDir = __DIR__ . "/../../../domain/tests/" . $useCaseDomain;
+        $domainMockPresenterDir = __DIR__ . "/../../../domain/tests/__Mock/Adapter/Presenter/" . $useCaseDomain;
 
         is_dir($domainDir) ?: mkdir($domainDir);
         is_dir($domainTestDir) ?: mkdir($domainTestDir);
 
-        $test_NamespaceDetails = $this->getClassDetails("Domain\\Tests\\".$this->useCaseDomain, "Test");
-        $test_NamespaceDetails['nameSpace'] = "Domain\\Tests\\".$this->useCaseDomain;
-        $useCase_NamespaceDetails = $this->getClassDetails("Domain\\" . $this->useCaseDomain . "\\UseCase");
-        $request_NamespaceDetails = $this->getClassDetails("Domain\\" . $this->useCaseDomain . "\\UseCase", "Request");
-        $response_NamespaceDetails = $this->getClassDetails("Domain\\" . $this->useCaseDomain . "\\UseCase", "Response");
-        $presenter_NamespaceDetails = $this->getClassDetails("Domain\\" . $this->useCaseDomain . "\\UseCase", "Presenter");
+        $vars = array_merge(self::getVars($useCaseDomain, $useCaseName), ['useCaseDomain' => $useCaseDomain]);
 
-        $generator->generateFile(
-            "${domainDir}/UseCase/${useCase_NamespaceDetails['shortName']}/${useCase_NamespaceDetails['shortName']}.php",
-            $this->getSkeletonFilePath('use_case.tpl.php'),
-            [
-                'className' => $useCase_NamespaceDetails['shortName'],
-                'namespace' => $useCase_NamespaceDetails['nameSpace'],
-                'requestClassName' => $request_NamespaceDetails['shortName'],
-                'responseClassName' => $response_NamespaceDetails['shortName'],
-                'presenterInterfaceName' => $presenter_NamespaceDetails['shortName']
-            ]
-        );
+        $skeletonDir = realpath(__DIR__ . '/../Resources/skeleton') . '/';
 
-        $generator->generateFile(
-            "${domainDir}/UseCase/${useCase_NamespaceDetails['shortName']}/${request_NamespaceDetails['shortName']}.php",
-            $this->getSkeletonFilePath('request.tpl.php'),
-            [
-                'className' => $request_NamespaceDetails['shortName'],
-                "namespace" => $useCase_NamespaceDetails['nameSpace']
-            ]
-        );
+        $useCaseInterfaceDir = "${useCaseDir}/${useCaseName}";
+        $useCaseDir = "${domainDir}/UseCase/${useCaseName}/${useCaseName}";
 
-        $generator->generateFile(
-            "${domainDir}/UseCase/${useCase_NamespaceDetails['shortName']}/${response_NamespaceDetails['shortName']}.php",
-            $this->getSkeletonFilePath('response.tpl.php'),
-            [
-                'className' => $response_NamespaceDetails['shortName'],
-                'namespace' => $useCase_NamespaceDetails['nameSpace']
-            ]
-        );
-
-        $generator->generateFile(
-            "${domainDir}/UseCase/${useCase_NamespaceDetails['shortName']}/${presenter_NamespaceDetails['shortName']}.php",
-            $this->getSkeletonFilePath('presenter.tpl.php'),
-            [
-                'className' => $presenter_NamespaceDetails['shortName'],
-                'namespace' => $useCase_NamespaceDetails['nameSpace'],
-                'responseClassName' => $response_NamespaceDetails['shortName']
-            ]
-        );
-
-        $generator->generateFile(
-            "${domainTestDir}/${test_NamespaceDetails['shortName']}.php",
-            $this->getSkeletonFilePath('test.tpl.php'),
-            [
-                'useCaseDomain' => $this->useCaseDomain,
-                'className' => $test_NamespaceDetails['shortName'],
-                'namespace' => $test_NamespaceDetails['nameSpace'],
-                'useCaseClassName' => $useCase_NamespaceDetails['shortName'],
-                'useCaseNamespace' => $useCase_NamespaceDetails['className'],
-                'requestClassName' => $request_NamespaceDetails['shortName'],
-                'requestNamespace' => $request_NamespaceDetails['className'],
-                'responseClassName' => $response_NamespaceDetails['shortName'],
-                'responseNamespace' => $response_NamespaceDetails['className'],
-                'presenterInterfaceName' => $presenter_NamespaceDetails['shortName'],
-                'presenterNamespace' => $presenter_NamespaceDetails['className']
-            ]
-        );
+        $generator->generateFile("${useCaseInterfaceDir}UseCase.php", "${skeletonDir}use_case_interface.tpl.php", $vars);
+        $generator->generateFile("${useCaseDir}.php", "${skeletonDir}use_case.tpl.php", $vars);
+        $generator->generateFile("${useCaseDir}Request.php", "${skeletonDir}request.tpl.php", $vars);
+        $generator->generateFile("${useCaseDir}Response.php", "${skeletonDir}response.tpl.php", $vars);
+        $generator->generateFile("${useCaseDir}Presenter.php", "${skeletonDir}presenter.tpl.php", $vars);
+        $generator->generateFile("${domainTestDir}/${useCaseName}Test.php", "${skeletonDir}test.tpl.php", $vars);
+        $generator->generateFile("${domainMockPresenterDir}/${useCaseName}Presenter.php", "${skeletonDir}presenter_mock.tpl.php", $vars);
 
         $generator->writeChanges();
 
         $this->writeSuccessMessage($io);
     }
 
-    public function configureDependencies(DependencyBuilder $dependencies): void
-    {
-    }
-
     /**
      * @return string[]
      */
-    private function getClassDetails(string $namespacePrefix, string $suffix = ''): array
+    private static function getVars(string $useCaseDomain, string $useCaseName,): array
     {
         return [
-            'className' => $namespacePrefix . '\\' . $this->useCaseName . '\\' . $this->useCaseName . $suffix,
-            'nameSpace' => $namespacePrefix . '\\' . $this->useCaseName,
-            'shortName' => $this->useCaseName . $suffix
+            'test_nameSpace' => "Domain\\Tests\\${useCaseDomain}",
+            'test_className' => "Domain\\Tests\\${useCaseDomain}\\${useCaseName}Test",
+            'test_shortName' => "${useCaseName}Test",
+            'presenterMock_className' => "Domain\\Tests\\__Mock\\Adapter\\Presenter\\${useCaseDomain}\\${useCaseName}Presenter",
+            'presenterMock_nameSpace' => "Domain\\Tests\\__Mock\\Adapter\\Presenter\\${useCaseDomain}",
+            'presenterMock_shortName' => "${useCaseName}Presenter",
+            'useCase_className' => "Domain\\${useCaseDomain}\\UseCase\\${useCaseName}\\${useCaseName}",
+            'useCase_nameSpace' => "Domain\\${useCaseDomain}\\UseCase\\${useCaseName}",
+            'useCase_shortName' => $useCaseName,
+            'request_className' => "Domain\\${useCaseDomain}\\UseCase\\${useCaseName}\\${useCaseName}Request",
+            'request_nameSpace' => "Domain\\${useCaseDomain}\\UseCase\\${useCaseName}",
+            'request_shortName' => "${useCaseName}Request",
+            'response_className' => "Domain\\${useCaseDomain}\\UseCase\\${useCaseName}\\${useCaseName}Response",
+            'response_nameSpace' => "Domain\\${useCaseDomain}\\UseCase\\${useCaseName}",
+            'response_shortName' => "${useCaseName}Response",
+            'presenter_className' => "Domain\\${useCaseDomain}\\UseCase\\${useCaseName}\\${useCaseName}Presenter",
+            'presenter_nameSpace' => "Domain\\${useCaseDomain}\\UseCase\\${useCaseName}",
+            'presenter_shortName' => "${useCaseName}Presenter",
+            'useCaseInterface_className' => "UseCase\\${useCaseName}UseCase",
+            'useCaseInterface_nameSpace' => "UseCase",
+            'useCaseInterface_shortName' => "${useCaseName}UseCase",
         ];
     }
 
-    private function getSkeletonFilePath(string $fileName): string
+    public function configureDependencies(DependencyBuilder $dependencies): void
     {
-        return realpath(__DIR__ . '/../Resources/skeleton') . '/' . $fileName;
     }
 }

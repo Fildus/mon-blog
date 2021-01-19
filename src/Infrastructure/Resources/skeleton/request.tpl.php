@@ -1,8 +1,8 @@
-<?php echo "<?php\n" ?>
+<?= "<?php\n" ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $request_nameSpace; ?>;
 
-class <?php echo $className; ?><?php echo "\n" ?>
+class <?= $request_shortName; ?><?= "\n" ?>
 {
     public function __construct(
         //public string $someVar

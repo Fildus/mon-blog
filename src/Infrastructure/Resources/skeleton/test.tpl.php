@@ -1,43 +1,34 @@
 <?php echo "<?php\n" ?>
 
-namespace <?= $namespace; ?>;
+namespace <?= $test_nameSpace; ?>;
 
-use <?= $presenterNamespace ?>;
-use <?= $requestNamespace ?>;
-use <?= $responseNamespace ?>;
-use <?= $useCaseNamespace ?>;
+use <?= $presenterMock_className ?>;
+use <?= $request_className ?>;
+use <?= $response_className ?>;
+use <?= $useCase_className ?>;
 use PHPUnit\Framework\TestCase;
 
-class <?= $className; ?> extends TestCase
+class <?= $test_shortName; ?> extends TestCase
 {
-    private <?= $presenterInterfaceName ?> $presenter;
-    private <?= $useCaseClassName ?> $useCase;
+    private <?= $presenter_shortName ?> $presenter;
+    private <?= $useCase_shortName ?> $useCase;
     private <?= $useCaseDomain ?>Repository $repository;
 
     protected function setUp(): void
     {
         $this->repository = new <?= $useCaseDomain ?>Repository();
-
-        $this->presenter = new class () implements <?= $presenterInterfaceName ?> {
-            public <?= $responseClassName ?> $response;
-
-            public function present(<?= $responseClassName ?> $response): void
-            {
-                $this->response = $response;
-            }
-        };
-
-        $this->useCase = new <?= $useCaseClassName ?>($this->repository);
+        $this->presenter = new <?= $presenter_shortName ?>();
+        $this->useCase = new <?= $useCase_shortName ?>($this->repository);
     }
 
     public function test(): void
     {
-        $request = new <?php echo $requestClassName; ?>(
+        $request = new <?= $request_shortName; ?>(
             //someVar: 'something'
         );
 
         $this->useCase->execute($request, $this->presenter);
 
-        $this->assertInstanceOf(<?php echo $responseClassName ?>::class, $this->presenter->response);
+        $this->assertInstanceOf(<?= $response_shortName ?>::class, $this->presenter->response);
     }
 }

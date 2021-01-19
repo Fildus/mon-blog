@@ -1,8 +1,8 @@
-<?php echo "<?php\n" ?>
+<?= "<?php\n" ?>
 
-namespace <?php echo $namespace; ?>;
+namespace <?= $presenter_nameSpace; ?>;
 
-interface <?php echo $className; ?><?php echo "\n" ?>
+interface <?= $presenter_shortName; ?><?= "\n" ?>
 {
-    public function present(<?php echo $responseClassName ?> $response): void;
+    public function present(<?= $response_shortName ?> $response): void;
 }
