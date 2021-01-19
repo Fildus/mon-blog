@@ -4,6 +4,8 @@ namespace App\Infrastructure\Adapter\Repository;
 
 use App\Infrastructure\Doctrine\Entity\Article;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,6 +21,11 @@ class ArticleRepository extends ServiceEntityRepository implements \Domain\Artic
         parent::__construct($registry, Article::class);
     }
 
+    /**
+     * @param \Domain\Article\Entity\Article $article
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
     public function createArticle(\Domain\Article\Entity\Article $article): void
     {
         $doctrineArticle = new Article();
@@ -29,5 +36,20 @@ class ArticleRepository extends ServiceEntityRepository implements \Domain\Artic
 
         $this->getEntityManager()->persist($doctrineArticle);
         $this->getEntityManager()->flush();
+    }
+
+    public function getArticles(): array
+    {
+        $articles = [];
+
+        foreach ($this->findAll() as $doctrineArticle){
+            $articles[] = new \Domain\Article\Entity\Article(
+                uuid: $doctrineArticle->getUuid(),
+                title: $doctrineArticle->getTitle(),
+                content: $doctrineArticle->getContent(),
+            );
+        }
+
+        return $articles;
     }
 }

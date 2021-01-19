@@ -17,4 +17,9 @@ class ArticleRepository implements \Domain\Article\Gateway\ArticleRepository
     {
         $this->articles[$article->uuid->toString()] = $article;
     }
+
+    public function getArticles(): array
+    {
+        return $this->articles;
+    }
 }

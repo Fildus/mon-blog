@@ -13,7 +13,7 @@ class Article
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="string", length=36)
+     * @ORM\Column(type="uuid", length=36)
      */
     private UuidInterface $uuid;
 

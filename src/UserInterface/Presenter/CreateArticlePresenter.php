@@ -6,7 +6,7 @@ namespace App\UserInterface\Presenter;
 
 use Domain\Article\UseCase\CreateArticle\CreateArticleResponse;
 
-class CreateArticlePresenter implements \Domain\Article\UseCase\CreateArticle\CreateArticlePresenter
+final class CreateArticlePresenter implements \Domain\Article\UseCase\CreateArticle\CreateArticlePresenter
 {
     public CreateArticleResponse $response;
 
