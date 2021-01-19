@@ -1,4 +1,4 @@
-.PHONY: dev clean init-db watch php node unit-test use-case phpstan
+.PHONY: dev clean init-db watch php node unit-test use-case phpstan rebuild extraInfos
 user := $(shell id -u)
 group := $(shell id -g)
 docker_compose_dev := USER_ID=$(user) GROUP_ID=$(group) docker-compose -f docker/docker-compose.dev.yaml --env-file ".env.local"
@@ -6,12 +6,13 @@ docker_compose_dev := USER_ID=$(user) GROUP_ID=$(group) docker-compose -f docker
 ## Development environment
 dev: .env.local vendor public/build ## run development server
 	$(docker_compose_dev) up --build -d
-	@echo "\n\033[0;33m \342\232\231 DEV! \033[0m"
-	@echo "\033[0;32mdevelopment server:\033[0m http://localhost:$(shell cat .env.local | grep NGINX_PORT= | cut -d '=' -f2)"
-	@echo "\033[0;32mphpmyadmin:\033[0m http://localhost:$(shell cat .env.local | grep PHPMYADMIN_PORT= | cut -d '=' -f2)"
-	@echo "- \033[0;34muser:\033[0m $(shell cat .env.local | grep MYSQL_USER= | cut -d '=' -f2)"
-	@echo "- \033[0;34mpassword:\033[0m $(shell cat .env.local | grep MYSQL_PASSWORD= | cut -d '=' -f2)"
-	@echo "\033[0;32mmailhog:\033[0m http://localhost:$(shell cat .env.local | grep MAILHOG_PORT= | cut -d '=' -f2)\n"
+	make extraInfos
+
+rebuild: ## rebuild all
+	make -B vendor public/build
+	$(docker_compose_dev) up --build -d
+	$(docker_compose_dev) exec php bin/phpunit
+	make extraInfos
 
 clean: ## remove container, images, network, and ignored files
 	$(docker_compose_dev) down --remove-orphans
@@ -53,6 +54,14 @@ composer.lock:
 
 .env.local:
 	cp ./.env.local.dist ./.env.local
+
+extraInfos:
+	@echo "\n\033[0;33m \342\232\231 DEV! \033[0m"
+	@echo "\033[0;32mdevelopment server:\033[0m http://localhost:$(shell cat .env.local | grep NGINX_PORT= | cut -d '=' -f2)"
+	@echo "\033[0;32mphpmyadmin:\033[0m http://localhost:$(shell cat .env.local | grep PHPMYADMIN_PORT= | cut -d '=' -f2)"
+	@echo "- \033[0;34muser:\033[0m $(shell cat .env.local | grep MYSQL_USER= | cut -d '=' -f2)"
+	@echo "- \033[0;34mpassword:\033[0m $(shell cat .env.local | grep MYSQL_PASSWORD= | cut -d '=' -f2)"
+	@echo "\033[0;32mmailhog:\033[0m http://localhost:$(shell cat .env.local | grep MAILHOG_PORT= | cut -d '=' -f2)\n"
 
 .DEFAULT_GOAL := help
 help:
